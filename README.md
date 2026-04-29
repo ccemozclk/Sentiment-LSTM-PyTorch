@@ -72,6 +72,152 @@ The model successfully handles tricky linguistic structures that confuse simpler
 
 ## 🛠️ Installation & Usage
 
-1. **Clone the repository:**
-   ```bash
-   git clone [https://github.com/ccemozclk/Sentiment-LSTM-PyTorch.git](https://github.com/ccemozclk/Sentiment-LSTM-PyTorch.git)
+### Prerequisites
+* Python 3.8 or higher
+* CUDA-compatible GPU recommended (CPU also supported, but training will be significantly slower)
+* ~2GB free disk space for datasets and model checkpoints
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/ccemozclk/Sentiment-LSTM-PyTorch.git
+cd Sentiment-LSTM-PyTorch
+```
+
+### 2. Set Up the Environment
+
+It is recommended to use a virtual environment to avoid dependency conflicts.
+
+```bash
+# Create a virtual environment
+python -m venv venv
+
+# Activate it
+# On Windows:
+venv\Scripts\activate
+# On macOS/Linux:
+source venv/bin/activate
+```
+
+### 3. Install Dependencies
+
+```bash
+pip install torch torchvision torchaudio
+pip install pandas numpy scikit-learn matplotlib
+pip install datasets transformers
+pip install kaggle
+```
+
+Alternatively, if a `requirements.txt` is present:
+
+```bash
+pip install -r requirements.txt
+```
+
+### 4. Prepare the Dataset
+
+You can choose between two data sources:
+
+**Option A — Hugging Face (recommended for quick start):**
+The dataset will be auto-downloaded by the `datasets` library on first run. No manual setup needed.
+
+**Option B — Kaggle:**
+1. Download `IMDB Dataset.csv` from [Kaggle IMDB Reviews](https://www.kaggle.com/datasets/lakshmi25npathi/imdb-dataset-of-50k-movie-reviews)
+2. Place it under `data/` directory in the project root.
+
+### 5. Train the Model
+
+```bash
+python train.py
+```
+
+The script will:
+* Load and preprocess the data
+* Build the vocabulary
+* Initialize the Bi-LSTM model
+* Train with early stopping (default: 10 epochs, patience=3)
+* Save the best model to `models/best_model.pth`
+
+### 6. Run Inference on Custom Text
+
+```bash
+python predict.py --text "This movie was an absolute masterpiece."
+```
+
+Or programmatically:
+
+```python
+from predict import load_model, predict_sentiment
+
+model, vocab = load_model('models/best_model.pth')
+sentiment, confidence = predict_sentiment(
+    "It was not bad at all.",
+    model,
+    vocab
+)
+print(f"Sentiment: {sentiment} (confidence: {confidence:.2%})")
+```
+
+## 📁 Project Structure
+
+```
+Sentiment-LSTM-PyTorch/
+├── data/                          # Dataset files (Kaggle CSV, etc.)
+├── models/                        # Saved model checkpoints
+│   └── best_model.pth
+├── notebooks/                     # Jupyter exploration notebooks
+│   └── 01_EDA_and_Training.ipynb
+├── src/
+│   ├── __init__.py
+│   ├── preprocessing.py           # Smart Vocab Builder + tokenizer
+│   ├── model.py                   # Bidirectional LSTM architecture
+│   ├── trainer.py                 # Training loop with early stopping
+│   └── utils.py                   # Helper functions
+├── train.py                       # Main training entry point
+├── predict.py                     # Inference script
+├── requirements.txt
+└── README.md
+```
+
+## 🎓 Key Learnings
+
+This project pushed me through several technical and conceptual milestones:
+
+* **Sequential Data Mindset:** Moved beyond independent feature thinking (typical in tabular ML) to capturing temporal/positional dependencies in text.
+* **Custom Architecture Design:** Built a bidirectional model from scratch rather than relying on `transformers` library shortcuts — gaining intuition about hidden state flow.
+* **Production Readiness:** Implemented gradient clipping, learning rate scheduling, and early stopping — standard practices in production ML systems.
+* **Domain Adaptation:** Trained embeddings from scratch on IMDB rather than using GloVe, demonstrating that domain-specific learning can match or exceed transfer learning for narrow corpora.
+
+## 🚀 Future Improvements
+
+Potential extensions to push this project further:
+
+* [ ] Replace LSTM with **Transformer encoder** for parallelizable training
+* [ ] Add **attention mechanism** for interpretable sentiment scoring
+* [ ] Fine-tune **BERT** as a benchmark comparison
+* [ ] Deploy as a **FastAPI** REST endpoint
+* [ ] Add **ONNX export** for cross-platform inference
+* [ ] Extend to **multi-class sentiment** (very negative → very positive)
+
+## 📚 References & Inspiration
+
+* Hochreiter & Schmidhuber (1997) — *Long Short-Term Memory*
+* Schuster & Paliwal (1997) — *Bidirectional Recurrent Neural Networks*
+* PyTorch Official LSTM Tutorial
+* Hugging Face `datasets` documentation
+
+## 📬 Contact
+
+* **Author:** İsmail Cem Özçelik
+* **Role:** Data Scientist & Industrial Engineer
+* **Email:** i.cemozcelik@gmail.com
+* **LinkedIn:** [linkedin.com/in/cemozcelık](https://linkedin.com/in/cemozcelık)
+* **GitHub:** [github.com/ccemozclk](https://github.com/ccemozclk)
+
+---
+
+*This project reflects my passion for building deep learning systems from first principles — understanding what happens inside the architecture, not just calling library functions.*
+
+## 📄 License
+
+This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
